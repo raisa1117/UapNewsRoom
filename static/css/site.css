@@ -88,4 +88,3 @@ textarea,input,select{font:inherit;width:100%;padding:.55rem .7rem;border:1px so
 [hidden]{display:none!important}
 
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
-
