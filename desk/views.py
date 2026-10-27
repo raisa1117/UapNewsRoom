@@ -15,6 +15,21 @@ def desk(request):
         "pending": Article.objects.filter(state=Article.PENDING).select_related("section", "writer").order_by("created_at"),
         "flags": Flag.objects.filter(closed=False).select_related("article", "raised_by"),
         "history": Decision.objects.select_related("article", "editor")[:6]})
+```python
+# Import decorators for authentication and staff-only access control.
+from django.contrib.auth.decorators import login_required, user_passes_test
+# Import HTTP exceptions and JSON response utilities.
+from django.http import Http404, JsonResponse
+# Import shortcuts for retrieving objects and rendering templates.
+from django.shortcuts import get_object_or_404, render
+# Import timezone utilities for publication timestamps.
+from django.utils import timezone
+# Import the decorator that restricts views to POST requests.
+from django.views.decorators.http import require_POST
+# Import the Article model used by the editorial workflow.
+from articles.models import Article
+# Import models for a
+```
 
 @staff_only
 @require_POST
