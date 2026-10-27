@@ -1,57 +1,20 @@
-
 from django.contrib import admin
-from .models import (
-    Section,
-    Keyword,
-    Article,
-    Reply,
-    Favourite,
-    Subscription,
-)
+from django.utils import timezone
+from .models import Article, Favourite, Keyword, Reply, Section, Subscription
 
-
-@admin.register(Section)
-class SectionAdmin(admin.ModelAdmin):
-    list_display = ("name", "color", "created_at", "updated_at")
-    search_fields = ("name",)
-
-
-@admin.register(Keyword)
-class KeywordAdmin(admin.ModelAdmin):
-    list_display = ("name", "created_at", "updated_at")
-    search_fields = ("name",)
-
+admin.site.register([Section, Keyword, Reply, Favourite, Subscription])
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = (
-        "title",
-        "kind",
-        "section",
-        "writer",
-        "state",
-        "reads",
-        "created_at",
-        "updated_at",
-    )
-    list_filter = ("state", "kind", "section")
-    search_fields = ("title", "body", "writer__username")
-    filter_horizontal = ("keywords",)
-    readonly_fields = ("created_at", "updated_at", "reads")
-    date_hierarchy = "created_at"
+    list_display = ["title", "kind", "section", "writer", "state", "reads"]
+    list_filter = ["state", "kind", "section"]
+    search_fields = ["title", "body"]
+    actions = ["make_live", "reject"]
 
+    @admin.action(description="Publish selected articles")
+    def make_live(self, request, qs):
+        qs.update(state=Article.LIVE, published_at=timezone.now(), editor_note="")
 
-@admin.register(Reply)
-class ReplyAdmin(admin.ModelAdmin):
-    list_display = ("article", "writer", "created_at", "updated_at")
-    search_fields = ("text", "writer__username")
-
-
-@admin.register(Favourite)
-class FavouriteAdmin(admin.ModelAdmin):
-    list_display = ("user", "article", "created_at", "updated_at")
-
-
-@admin.register(Subscription)
-class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ("user", "section", "created_at", "updated_at")
+    @admin.action(description="Reject selected articles")
+    def reject(self, request, qs):
+        qs.update(state=Article.REJECTED)

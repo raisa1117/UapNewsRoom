@@ -11,5 +11,3 @@ urlpatterns = [
     path("article/<int:pk>/favourite/", views.favourite, name="favourite"),
     path("section/<int:pk>/follow/", views.follow, name="follow"),
 ]
-
-#done by raisa
