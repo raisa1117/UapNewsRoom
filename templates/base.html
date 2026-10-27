@@ -5,35 +5,269 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block title %}UAP News & Blog Portal{% endblock %}</title>
 <link rel="stylesheet" href="{% static 'css/site.css' %}">
-<script>try{document.documentElement.dataset.theme=localStorage.getItem('uap-theme')||'light'}catch(e){}</script>
+
+<style>
+    /* CSS Variables for Easy Theming */
+    :root {
+        --bg-color: #f8f9fa;
+        --text-main: #2b2b2b;
+        --text-muted: #6c757d;
+        --brand-color: #0056b3;
+        --accent-color: #e63946;
+        --header-bg: #ffffff;
+        --nav-border: #e9ecef;
+        --flash-bg: #d4edda;
+        --flash-text: #155724;
+    }
+
+    [data-theme="dark"] {
+        --bg-color: #121212;
+        --text-main: #e0e0e0;
+        --text-muted: #a0a0a0;
+        --brand-color: #66b2ff;
+        --header-bg: #1e1e1e;
+        --nav-border: #333333;
+        --flash-bg: #1e4620;
+        --flash-text: #c3e6cb;
+    }
+
+    /* Global Reset & Typography */
+    body {
+        margin: 0;
+        font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        line-height: 1.6;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    a {
+        text-decoration: none;
+        color: var(--brand-color);
+        transition: color 0.2s;
+    }
+    
+    a:hover {
+        color: var(--accent-color);
+    }
+
+    /* Header Styling */
+    .mast {
+        background-color: var(--header-bg);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    /* Top Bar (Date, Login, Theme) */
+    .mast-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 5%;
+        background-color: #212529;
+        color: #f8f9fa;
+        font-size: 13px;
+    }
+
+    .mast-top a {
+        color: #f8f9fa;
+        margin-left: 15px;
+    }
+
+    .mast-top a:hover {
+        color: #adb5bd;
+    }
+
+    .tools {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    /* Clear default button styles for inline forms */
+    .tools form {
+        margin: 0;
+        display: inline;
+    }
+
+    button.plain {
+        background: none;
+        border: none;
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+        padding: 0;
+    }
+    
+    button.plain:hover {
+        text-decoration: underline;
+    }
+
+    #theme {
+        background-color: rgba(255,255,255,0.1);
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        transition: background 0.3s;
+    }
+    
+    #theme:hover {
+        background-color: rgba(255,255,255,0.2);
+        text-decoration: none;
+    }
+
+    /* Logo Section */
+    .logo {
+        display: block;
+        text-align: center;
+        font-size: 32px;
+        font-weight: 800;
+        color: var(--text-main);
+        padding: 25px 15px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .logo em {
+        color: var(--accent-color);
+        font-style: normal;
+    }
+    
+    .logo:hover {
+        color: var(--text-main);
+    }
+
+    /* Navigation Bar */
+    .bar {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 30px;
+        padding: 15px 5%;
+        border-top: 1px solid var(--nav-border);
+        border-bottom: 1px solid var(--nav-border);
+    }
+
+    .bar a {
+        color: var(--text-main);
+        font-weight: 600;
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Hover Underline Animation */
+    .bar a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -4px;
+        left: 0;
+        background-color: var(--accent-color);
+        transition: width 0.3s;
+    }
+
+    .bar a:hover::after {
+        width: 100%;
+    }
+
+    /* Notification Badges (Dots) */
+    .dot {
+        background-color: var(--accent-color);
+        color: white;
+        font-size: 11px;
+        font-weight: bold;
+        padding: 2px 6px;
+        border-radius: 12px;
+        line-height: 1;
+    }
+
+    /* Main Content Area */
+    main {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 5%;
+        min-height: 60vh;
+    }
+
+    /* Flash Messages */
+    .flash {
+        background-color: var(--flash-bg);
+        color: var(--flash-text);
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        font-weight: 500;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border-left: 5px solid #28a745;
+        animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<script>
+    // Theme setup to avoid UI flash
+    try { document.documentElement.dataset.theme = localStorage.getItem('uap-theme') || 'light' } catch(e) {}
+</script>
 </head>
 <body>
 <header class="mast">
   <div class="mast-top">
     <span id="today"></span>
     <span class="tools">
-      {% if user.is_authenticated %}<span>Signed in as <b>{{ user.username }}</b></span>
-      <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="plain">Log out</button></form>
-      {% else %}<a href="{% url 'login' %}">Log in</a><a href="{% url 'signup' %}">Sign up</a>{% endif %}
+      {% if user.is_authenticated %}
+        <span>Signed in as <b>{{ user.username }}</b></span>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button class="plain">Log out</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}">Log in</a>
+        <a href="{% url 'signup' %}">Sign up</a>
+      {% endif %}
       <button class="plain" id="theme" title="Switch light or dark">Theme</button>
     </span>
   </div>
+  
   <a class="logo" href="{% url 'front' %}">UAP <em>News</em> &amp; Blog Portal</a>
+  
   <nav class="bar">
     <a href="{% url 'front' %}">Front page</a>
     {% if user.is_authenticated %}
       <a href="{% url 'write' %}">Write</a>
       <a href="{% url 'mine' %}">My articles</a>
       <a href="{% url 'favourites' %}">Favourites</a>
-      <a href="{% url 'alerts' %}">Alerts{% if alert_count %}<b class="dot">{{ alert_count }}</b>{% endif %}</a>
-      {% if user.is_staff %}<a href="{% url 'desk' %}">Editor desk{% if queue_count %}<b class="dot" id="nav-queue">{{ queue_count }}</b>{% endif %}</a>{% endif %}
+      <a href="{% url 'alerts' %}">
+          Alerts{% if alert_count %}<b class="dot">{{ alert_count }}</b>{% endif %}
+      </a>
+      {% if user.is_staff %}
+        <a href="{% url 'desk' %}">
+            Editor desk{% if queue_count %}<b class="dot" id="nav-queue">{{ queue_count }}</b>{% endif %}
+        </a>
+      {% endif %}
     {% endif %}
   </nav>
 </header>
+
 <main>
-  {% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}
+  {% for m in messages %}
+    <div class="flash">{{ m }}</div>
+  {% endfor %}
+  
   {% block content %}{% endblock %}
 </main>
+
 <div id="toasts" aria-live="polite"></div>
 <script src="{% static 'js/site.js' %}"></script>
 </body>
