@@ -80,9 +80,12 @@ textarea,input,select{font:inherit;width:100%;padding:.55rem .7rem;border:1px so
 .queue{border-right:1px solid var(--rule);display:flex;flex-direction:column}
 .qitem{text-align:left;background:none;border:0;border-bottom:1px solid var(--rule);border-left:5px solid var(--c);padding:.8rem 1rem;color:var(--ink);display:grid;transition:opacity .3s}
 .qitem small{color:var(--soft)}.qitem.on{background:var(--paper)}
+
 .panes{padding:1.4rem}.pane{display:grid;gap:.6rem;transition:opacity .3s,transform .3s}
 .pane h2{font-size:1.8rem}.pane .text{max-height:300px;overflow:auto;margin:.4rem 0}
 #toasts{position:fixed;bottom:1rem;right:1rem;display:grid;gap:.5rem;z-index:40}
 .toast{background:var(--ink);color:var(--paper);padding:.6rem 1rem;border-radius:6px}
 [hidden]{display:none!important}
+
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
