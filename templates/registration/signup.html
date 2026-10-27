@@ -1,6 +1,147 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="card slim"><h1>Create account</h1>
-<form method="post" class="form">{% csrf_token %}{% for f in form %}<label>{{ f.label }}{{ f }}{% for e in f.errors %}<small class="bad">{{ e }}</small>{% endfor %}</label>{% endfor %}
-<button class="btn" type="submit">Sign up</button></form></div>
+<style>
+    /* Card Container */
+    .card.slim {
+        max-width: 400px;
+        margin: 60px auto;
+        padding: 40px 30px;
+        background-color: var(--header-bg, #ffffff);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border: 1px solid var(--nav-border, #e9ecef);
+    }
+
+    .card.slim h1 {
+        text-align: center;
+        font-size: 28px;
+        color: var(--text-main, #333);
+        margin-top: 0;
+        margin-bottom: 30px;
+        font-weight: 700;
+    }
+
+    /* Form Layout */
+    .form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* Labels and Inputs */
+    .form label {
+        display: flex;
+        flex-direction: column;
+        font-size: 14.5px;
+        font-weight: 600;
+        color: var(--text-main, #444);
+        gap: 8px;
+    }
+
+    .form label input {
+        padding: 12px 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 15px;
+        background-color: #fafafa;
+        color: #333;
+        transition: all 0.3s ease;
+    }
+
+    .form label input:focus {
+        outline: none;
+        border-color: var(--brand-color, #0056b3);
+        box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
+        background-color: #ffffff;
+    }
+
+    /* Error Message Box */
+    .bad {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #d9534f;
+        padding: 12px;
+        border-radius: 6px;
+        font-size: 13.5px;
+        text-align: center;
+        font-weight: 500;
+        border: 1px solid rgba(220, 53, 69, 0.2);
+        margin-top: -5px;
+        display: block;
+    }
+
+    /* Submit Button */
+    .btn {
+        background-color: var(--brand-color, #0056b3);
+        color: white;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.1s ease;
+        margin-top: 5px;
+    }
+
+    .btn:hover {
+        background-color: #004494; /* Darker blue */
+    }
+
+    .btn:active {
+        transform: scale(0.98);
+    }
+
+    /* Hint Text (New here?) */
+    .hint {
+        text-align: center;
+        margin-top: 25px;
+        font-size: 14.5px;
+        color: var(--text-muted, #666);
+    }
+
+    .hint a {
+        font-weight: 600;
+        color: var(--brand-color, #0056b3);
+        text-decoration: none;
+    }
+
+    .hint a:hover {
+        text-decoration: underline;
+        color: var(--accent-color, #e63946);
+    }
+
+    /* Dark Mode Form Overrides */
+    [data-theme="dark"] .form label input {
+        background-color: #2a2a2a;
+        border-color: #444;
+        color: #fff;
+    }
+    [data-theme="dark"] .form label input:focus {
+        background-color: #333;
+    }
+</style>
+
+<div class="card slim">
+    <h1>Log in</h1>
+    
+    <form method="post" class="form">
+        {% csrf_token %}
+        
+        {% for f in form %}
+            <label>
+                {{ f.label }}
+                {{ f }}
+            </label>
+        {% endfor %}
+        
+        {% if form.errors %}
+            <small class="bad">Wrong username or password.</small>
+        {% endif %}
+        
+        <button class="btn" type="submit">Log in</button>
+    </form>
+    
+    <p class="hint">New here? <a href="{% url 'signup' %}">Create an account</a></p>
+</div>
 {% endblock %}
