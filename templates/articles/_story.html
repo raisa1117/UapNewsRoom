@@ -1,0 +1,7 @@
+<article class="story" style="--c:{{ a.section.color }}" data-sec="{{ a.section_id }}" data-kind="{{ a.kind }}"
+  data-text="{{ a.title|lower }} {{ a.body|lower|slice:':300' }}{% for k in a.keywords.all %} {{ k.name }}{% endfor %}">
+  <span class="kicker">{{ a.section.name }} · {{ a.get_kind_display }}</span>
+  <h3><a href="{{ a.get_absolute_url }}">{{ a.title }}</a></h3>
+  <p>{{ a.teaser }}</p>
+  <footer>{{ a.writer.username }} · {{ a.published_at|default:a.created_at|date:"j M Y" }} · {{ a.reads }} read{{ a.reads|pluralize }}</footer>
+</article>

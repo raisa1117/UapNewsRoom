@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card slim"><h1>Create account</h1>
+<form method="post" class="form">{% csrf_token %}{% for f in form %}<label>{{ f.label }}{{ f }}{% for e in f.errors %}<small class="bad">{{ e }}</small>{% endfor %}</label>{% endfor %}
+<button class="btn" type="submit">Sign up</button></form></div>
+{% endblock %}

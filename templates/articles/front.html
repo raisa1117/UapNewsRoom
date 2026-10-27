@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+{% if notice %}<div class="notice"><b>Notice</b> {{ notice.text }}</div>{% endif %}
+<div class="front">
+  <aside class="rail">
+    <h4>Sections</h4>
+    <div id="sections">
+      <button class="sec on" data-v=""><i style="--c:var(--ink)"></i>All stories<span>{{ total }}</span></button>
+      {% for s in sections %}
+      <div class="secrow">
+        <button class="sec" data-v="{{ s.id }}"><i style="--c:{{ s.color }}"></i>{{ s.name }}<span>{{ s.n }}</span></button>
+        {% if user.is_authenticated %}<button class="follow {% if s.id in followed %}on{% endif %}" data-url="{% url 'follow' s.id %}" title="Follow for alerts" aria-label="Follow {{ s.name }}">★</button>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% if not user.is_authenticated %}<p class="hint">Log in to follow sections and get an alert when something new is published.</p>{% endif %}
+  </aside>
+  <section>
+    <div class="controls">
+      <input id="q" type="search" placeholder="Search headlines, text, keywords" aria-label="Search">
+      <div class="seg" id="kinds"><button class="on" data-v="">All</button><button data-v="news">News</button><button data-v="blog">Blogs</button></div>
+      <div class="seg" id="layout"><button class="on" data-v="grid">Grid</button><button data-v="list">List</button></div>
+    </div>
+    <p class="count" id="count"></p>
+    <div class="stories" id="stories">{% for a in stories %}{% include "articles/_story.html" %}{% endfor %}</div>
+    <div class="blank" id="blank" {% if stories %}hidden{% endif %}>Nothing here yet. <a href="{% url 'write' %}">Write the first story.</a></div>
+  </section>
+</div>
+{% endblock %}

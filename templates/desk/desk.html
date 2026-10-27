@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="page">Editor desk <b class="dot" id="left">{{ pending|length }}</b></h1>
+<div class="deskwrap" id="deskwrap" {% if not pending %}hidden{% endif %}>
+  <div class="queue" id="queue">
+    {% for a in pending %}<button class="qitem {% if forloop.first %}on{% endif %}" data-pane="pane-{{ a.pk }}" style="--c:{{ a.section.color }}">
+      <b>{{ a.title }}</b><small>{{ a.writer.username }} · {{ a.section.name }}</small></button>{% endfor %}
+  </div>
+  <div class="panes">
+    {% for a in pending %}
+    <div class="pane" id="pane-{{ a.pk }}" {% if not forloop.first %}hidden{% endif %}>
+      <span class="kicker" style="--c:{{ a.section.color }}">{{ a.section.name }} · {{ a.get_kind_display }}</span>
+      <h2>{{ a.title }}</h2><p class="byline">by {{ a.writer.username }} · {{ a.created_at|date:"j M Y, H:i" }}</p>
+      <div class="text">{{ a.body|linebreaks }}</div>
+      <textarea rows="2" placeholder="Note to the writer (shown if you reject)"></textarea>
+      <div class="row-btns">
+        <button class="btn good" data-act="approve" data-url="{% url 'decide' a.pk 'approve' %}">Approve and publish</button>
+        <button class="btn bad" data-act="reject" data-url="{% url 'decide' a.pk 'reject' %}">Reject</button>
+      </div>
+    </div>{% endfor %}
+  </div>
+</div>
+<div class="blank" id="desk-empty" {% if pending %}hidden{% endif %}>The queue is empty. Nothing is waiting for review.</div>
+
+<h2 class="sub">Flagged by readers</h2>
+{% for f in flags %}<div class="line-item"><div><a class="t" href="{{ f.article.get_absolute_url }}">{{ f.article.title }}</a>
+  <div class="byline">{{ f.raised_by.username }}: {{ f.reason }}</div></div>
+  <button class="btn line" data-close data-url="{% url 'close_flag' f.pk %}">Close</button></div>
+{% empty %}<p class="hint">No open flags.</p>{% endfor %}
+
+<h2 class="sub">Recent decisions</h2>
+{% for d in history %}<div class="line-item"><span>{{ d.editor.username|default:"(deleted)" }} · {{ d.get_verdict_display|lower }} <b>{{ d.article.title }}</b></span><span class="byline">{{ d.created_at|date:"j M, H:i" }}</span></div>
+{% empty %}<p class="hint">No decisions yet.</p>{% endfor %}
+{% endblock %}

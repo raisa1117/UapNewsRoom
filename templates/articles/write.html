@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card narrow">
+  <h1>{{ heading }}</h1>
+  <form method="post" class="form">{% csrf_token %}
+    {% for f in form %}<label>{{ f.label }}{{ f }}
+      {% if f.help_text %}<small>{{ f.help_text }}</small>{% endif %}
+      {% if f.name == 'body' %}<small><span id="chars">0</span> / 6000</small>{% endif %}
+      {% for e in f.errors %}<small class="bad">{{ e }}</small>{% endfor %}</label>{% endfor %}
+    <p class="hint">Articles from members are checked by an editor before they reach the front page.</p>
+    <button class="btn" type="submit">{% if user.is_staff %}Publish now{% else %}Send to the desk{% endif %}</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="page">My articles</h1>
+{% for a in items %}
+<div class="line-item" style="--c:{{ a.section.color }}">
+  <div><a class="t" href="{{ a.get_absolute_url }}">{{ a.title }}</a>
+    <div class="byline">{{ a.get_kind_display }} · {{ a.section.name }} · {{ a.created_at|date:"j M Y" }}</div>
+    {% if a.state == 'rejected' and a.editor_note %}<div class="editor-note">Editor's note: {{ a.editor_note }}</div>{% endif %}</div>
+  <div class="end"><b class="state {{ a.state }}">{{ a.get_state_display }}</b><a href="{% url 'rewrite' a.pk %}">Edit</a></div>
+</div>
+{% empty %}<div class="blank">You have not written anything yet. <a href="{% url 'write' %}">Start now.</a></div>{% endfor %}
+{% endblock %}

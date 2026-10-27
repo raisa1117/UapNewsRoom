@@ -1,0 +1,40 @@
+{% load static %}<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}UAP News & Blog Portal{% endblock %}</title>
+<link rel="stylesheet" href="{% static 'css/site.css' %}">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('uap-theme')||'light'}catch(e){}</script>
+</head>
+<body>
+<header class="mast">
+  <div class="mast-top">
+    <span id="today"></span>
+    <span class="tools">
+      {% if user.is_authenticated %}<span>Signed in as <b>{{ user.username }}</b></span>
+      <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="plain">Log out</button></form>
+      {% else %}<a href="{% url 'login' %}">Log in</a><a href="{% url 'signup' %}">Sign up</a>{% endif %}
+      <button class="plain" id="theme" title="Switch light or dark">Theme</button>
+    </span>
+  </div>
+  <a class="logo" href="{% url 'front' %}">UAP <em>News</em> &amp; Blog Portal</a>
+  <nav class="bar">
+    <a href="{% url 'front' %}">Front page</a>
+    {% if user.is_authenticated %}
+      <a href="{% url 'write' %}">Write</a>
+      <a href="{% url 'mine' %}">My articles</a>
+      <a href="{% url 'favourites' %}">Favourites</a>
+      <a href="{% url 'alerts' %}">Alerts{% if alert_count %}<b class="dot">{{ alert_count }}</b>{% endif %}</a>
+      {% if user.is_staff %}<a href="{% url 'desk' %}">Editor desk{% if queue_count %}<b class="dot" id="nav-queue">{{ queue_count }}</b>{% endif %}</a>{% endif %}
+    {% endif %}
+  </nav>
+</header>
+<main>
+  {% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}
+  {% block content %}{% endblock %}
+</main>
+<div id="toasts" aria-live="polite"></div>
+<script src="{% static 'js/site.js' %}"></script>
+</body>
+</html>

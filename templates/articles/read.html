@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ a.title }}{% endblock %}
+{% block content %}
+<div id="progress"></div>
+<article class="read" style="--c:{{ a.section.color }}">
+  <span class="kicker">{{ a.section.name }} · {{ a.get_kind_display }}{% if a.state != 'live' %} · <b class="state {{ a.state }}">{{ a.get_state_display }}</b>{% endif %}</span>
+  <h1>{{ a.title }}</h1>
+  <p class="byline">By <b>{{ a.writer.username }}</b>{% if a.writer.profile.department %}, {{ a.writer.profile.department.name }}{% endif %} · {{ a.published_at|default:a.created_at|date:"j F Y" }} · {{ a.reads }} reads</p>
+  {% if a.keywords.all %}<p class="kw">{% for k in a.keywords.all %}<span>#{{ k.name }}</span>{% endfor %}</p>{% endif %}
+  <div class="text">{{ a.body|linebreaks }}</div>
+  {% if a.state == 'rejected' and a.editor_note %}<p class="editor-note">Editor's note: {{ a.editor_note }}</p>{% endif %}
+  {% if a.state == 'live' and user.is_authenticated %}
+  <div class="row-btns">
+    <button class="btn line" id="fav" data-url="{% url 'favourite' a.pk %}"><span id="fav-label">{% if fav %}★ Favourited{% else %}☆ Favourite{% endif %}</span> · <span id="fav-count">{{ fav_count }}</span></button>
+    <button class="btn line" id="flag-open">Flag</button>
+  </div>
+  <dialog id="flag-dlg"><form method="dialog">
+    <h3>Flag this article</h3><textarea id="flag-reason" rows="3" placeholder="What is wrong with it?"></textarea>
+    <div class="row-btns"><button class="btn line" value="cancel">Cancel</button><button class="btn" id="flag-send" data-url="{% url 'flag' a.pk %}" value="ok">Send to editors</button></div>
+  </form></dialog>
+  {% endif %}
+  {% if a.state == 'live' %}
+  <section class="replies"><h2>{{ replies|length }} repl{{ replies|length|pluralize:"y,ies" }}</h2>
+    {% for r in replies %}<div class="reply"><b>{{ r.writer.username }}</b> <small>{{ r.created_at|date:"j M, H:i" }}</small><p>{{ r.text }}</p></div>{% empty %}<p class="hint">No replies yet.</p>{% endfor %}
+    {% if user.is_authenticated %}<form method="post" action="{% url 'reply' a.pk %}">{% csrf_token %}{{ form.text }}<button class="btn" type="submit">Reply</button></form>
+    {% else %}<p><a href="{% url 'login' %}?next={{ request.path }}">Log in</a> to reply.</p>{% endif %}
+  </section>{% endif %}
+</article>
+{% endblock %}

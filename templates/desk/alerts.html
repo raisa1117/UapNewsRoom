@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="page">Alerts</h1>
+{% for n in items %}<div class="line-item {% if not n.seen %}fresh{% endif %}">
+  <div>{% if n.article %}<a class="t" href="{{ n.article.get_absolute_url }}">{{ n.text }}</a>{% else %}{{ n.text }}{% endif %}</div>
+  <span class="byline">{{ n.created_at|date:"j M, H:i" }}</span></div>
+{% empty %}<div class="blank">No alerts yet. Follow a section on the front page to hear about new stories.</div>{% endfor %}
+{% endblock %}

@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="page">Favourites</h1>
+<div class="stories">{% for a in stories %}{% include "articles/_story.html" %}{% empty %}
+<div class="blank">No favourites yet. Open a story and press Favourite.</div>{% endfor %}</div>
+{% endblock %}
