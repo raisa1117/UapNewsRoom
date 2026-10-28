@@ -1,34 +1,140 @@
+```html
 {% extends "base.html" %}
+
 {% block content %}
+
+<!-- Editor desk heading and total number of pending articles -->
 <h1 class="page">Editor desk <b class="dot" id="left">{{ pending|length }}</b></h1>
+
+<!-- Main editor desk wrapper; hidden when there are no pending articles -->
 <div class="deskwrap" id="deskwrap" {% if not pending %}hidden{% endif %}>
+
+  <!-- Queue containing all articles waiting for review -->
   <div class="queue" id="queue">
-    {% for a in pending %}<button class="qitem {% if forloop.first %}on{% endif %}" data-pane="pane-{{ a.pk }}" style="--c:{{ a.section.color }}">
-      <b>{{ a.title }}</b><small>{{ a.writer.username }} · {{ a.section.name }}</small></button>{% endfor %}
+
+    <!-- Loop through pending articles and display them in the queue -->
+    {% for a in pending %}
+    <button class="qitem {% if forloop.first %}on{% endif %}"
+            data-pane="pane-{{ a.pk }}"
+            style="--c:{{ a.section.color }}">
+
+      <!-- Article title -->
+      <b>{{ a.title }}</b>
+
+      <!-- Writer username and article section -->
+      <small>{{ a.writer.username }} · {{ a.section.name }}</small>
+
+    </button>
+    {% endfor %}
+
   </div>
+
+  <!-- Area where the selected article's details are displayed -->
   <div class="panes">
+
+    <!-- Loop through pending articles to create their content panes -->
     {% for a in pending %}
     <div class="pane" id="pane-{{ a.pk }}" {% if not forloop.first %}hidden{% endif %}>
-      <span class="kicker" style="--c:{{ a.section.color }}">{{ a.section.name }} · {{ a.get_kind_display }}</span>
-      <h2>{{ a.title }}</h2><p class="byline">by {{ a.writer.username }} · {{ a.created_at|date:"j M Y, H:i" }}</p>
+
+      <!-- Display the article section and type -->
+      <span class="kicker" style="--c:{{ a.section.color }}">
+        {{ a.section.name }} · {{ a.get_kind_display }}
+      </span>
+
+      <!-- Article title -->
+      <h2>{{ a.title }}</h2>
+
+      <!-- Display writer information and article creation date -->
+      <p class="byline">
+        by {{ a.writer.username }} · {{ a.created_at|date:"j M Y, H:i" }}
+      </p>
+
+      <!-- Display the article body with preserved line breaks -->
       <div class="text">{{ a.body|linebreaks }}</div>
+
+      <!-- Text area for feedback to the writer when rejecting an article -->
       <textarea rows="2" placeholder="Note to the writer (shown if you reject)"></textarea>
+
+      <!-- Buttons for approving and rejecting the article -->
       <div class="row-btns">
-        <button class="btn good" data-act="approve" data-url="{% url 'decide' a.pk 'approve' %}">Approve and publish</button>
-        <button class="btn bad" data-act="reject" data-url="{% url 'decide' a.pk 'reject' %}">Reject</button>
+
+        <!-- Approve the article and publish it -->
+        <button class="btn good"
+                data-act="approve"
+                data-url="{% url 'decide' a.pk 'approve' %}">
+          Approve and publish
+        </button>
+
+        <!-- Reject the article -->
+        <button class="btn bad"
+                data-act="reject"
+                data-url="{% url 'decide' a.pk 'reject' %}">
+          Reject
+        </button>
+
       </div>
-    </div>{% endfor %}
+    </div>
+    {% endfor %}
+
   </div>
 </div>
-<div class="blank" id="desk-empty" {% if pending %}hidden{% endif %}>The queue is empty. Nothing is waiting for review.</div>
 
+<!-- Empty-state message shown when no articles are waiting for review -->
+<div class="blank" id="desk-empty" {% if pending %}hidden{% endif %}>
+  The queue is empty. Nothing is waiting for review.
+</div>
+
+<!-- Section displaying articles flagged by readers -->
 <h2 class="sub">Flagged by readers</h2>
-{% for f in flags %}<div class="line-item"><div><a class="t" href="{{ f.article.get_absolute_url }}">{{ f.article.title }}</a>
-  <div class="byline">{{ f.raised_by.username }}: {{ f.reason }}</div></div>
-  <button class="btn line" data-close data-url="{% url 'close_flag' f.pk %}">Close</button></div>
-{% empty %}<p class="hint">No open flags.</p>{% endfor %}
 
+<!-- Loop through all open reader flags -->
+{% for f in flags %}
+<div class="line-item">
+
+  <div>
+    <!-- Link to the flagged article -->
+    <a class="t" href="{{ f.article.get_absolute_url }}">{{ f.article.title }}</a>
+
+    <!-- Display the reader who reported the article and the reason -->
+    <div class="byline">{{ f.raised_by.username }}: {{ f.reason }}</div>
+  </div>
+
+  <!-- Button for closing the reader flag -->
+  <button class="btn line"
+          data-close
+          data-url="{% url 'close_flag' f.pk %}">
+    Close
+  </button>
+
+</div>
+
+<!-- Message displayed when there are no open flags -->
+{% empty %}
+<p class="hint">No open flags.</p>
+{% endfor %}
+
+<!-- Section displaying recent editorial decisions -->
 <h2 class="sub">Recent decisions</h2>
-{% for d in history %}<div class="line-item"><span>{{ d.editor.username|default:"(deleted)" }} · {{ d.get_verdict_display|lower }} <b>{{ d.article.title }}</b></span><span class="byline">{{ d.created_at|date:"j M, H:i" }}</span></div>
-{% empty %}<p class="hint">No decisions yet.</p>{% endfor %}
+
+<!-- Loop through the decision history -->
+{% for d in history %}
+<div class="line-item">
+
+  <!-- Display editor name, decision verdict, and article title -->
+  <span>
+    {{ d.editor.username|default:"(deleted)" }} · {{ d.get_verdict_display|lower }}
+    <b>{{ d.article.title }}</b>
+  </span>
+
+  <!-- Display the date and time of the decision -->
+  <span class="byline">{{ d.created_at|date:"j M, H:i" }}</span>
+
+</div>
+
+<!-- Message displayed when no decisions have been recorded -->
+{% empty %}
+<p class="hint">No decisions yet.</p>
+{% endfor %}
+
 {% endblock %}
+```
